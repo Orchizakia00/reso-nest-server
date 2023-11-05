@@ -24,6 +24,15 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
+
+        const roomsCollection = client.db('resoNest').collection('rooms');
+
+        app.get('/rooms', async (req, res) => {
+            const cursor = roomsCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {

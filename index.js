@@ -26,7 +26,9 @@ async function run() {
     try {
 
         const roomsCollection = client.db('resoNest').collection('rooms');
+        const bookingCollection = client.db('resoNest').collection('bookings');
 
+        // rooms api
         app.get('/rooms', async (req, res) => {
             const cursor = roomsCollection.find();
             const result = await cursor.toArray();
@@ -37,6 +39,14 @@ async function run() {
             const id = req.params.id;
             const query = {_id: new ObjectId(id)};
             const result = await roomsCollection.findOne(query);
+            res.send(result);
+        })
+
+
+        // booking api
+        app.post('/bookings', async (req, res) => {
+            const booking = req.body;
+            const result = await bookingCollection.insertOne(booking);
             res.send(result);
         })
 

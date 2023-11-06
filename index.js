@@ -31,6 +31,7 @@ async function run() {
 
         const roomsCollection = client.db('resoNest').collection('rooms');
         const bookingCollection = client.db('resoNest').collection('bookings');
+        const reviewCollection = client.db('resoNest').collection('reviews');
 
         // auth api
         app.post('/jwt', async (req, res) => {
@@ -94,7 +95,12 @@ async function run() {
             res.send(result);
         })
 
-
+        app.get('/bookings/:roomId', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await bookingCollection.findOne(query);
+            res.send(result);
+        })
 
         app.put('/bookings/:id', async (req, res) => {
             const id = req.params.id;
@@ -113,13 +119,27 @@ async function run() {
             };
             const result = await bookingCollection.updateOne(filter, updateDoc, options);
             res.send(result);
-            
+
         })
 
         app.delete('/bookings/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
             const result = await bookingCollection.deleteOne(query);
+            res.send(result);
+        })
+
+        // review api
+        app.get('/reviews', async (req, res) => {
+            const cursor = reviewCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        app.post('/reviews', async (req, res) => {
+            const review = req.body;
+            console.log(review);
+            const result = await reviewCollection.insertOne(review);
             res.send(result);
         })
 

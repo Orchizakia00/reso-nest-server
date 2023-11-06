@@ -50,8 +50,15 @@ async function run() {
 
         // rooms api
         app.get('/rooms', async (req, res) => {
+            // const page = parseInt(req.query.page);
+            // const size = parseInt(req.query.size);
+            // console.log('pagination', page, size);
+
             const cursor = roomsCollection.find();
-            const result = await cursor.toArray();
+            const result = await cursor
+            // .skip(page* size)
+            // .limit(size)
+            .toArray();
             res.send(result);
         })
 
@@ -133,7 +140,7 @@ async function run() {
         app.get('/reviews', async (req, res) => {
             const cursor = reviewCollection.find();
             const result = await cursor.toArray();
-            
+
             res.send(result);
         })
 

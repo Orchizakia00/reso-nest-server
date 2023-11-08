@@ -85,6 +85,19 @@ async function run() {
             const result = await roomsCollection.updateOne(query, updateDoc);
             res.send(result);
         });
+        
+        app.put('/rooms/:id/updateAvailabilityToTrue', async (req, res) => {
+            const { id } = req.params;
+            const query = { _id: new ObjectId(id) };
+            // const options = { upsert: true };
+            const updateDoc = { $set: { availability: true } };
+
+
+            const result = await roomsCollection.updateOne(query, updateDoc);
+            res.send(result);
+        });
+
+       
 
 
         // booking api

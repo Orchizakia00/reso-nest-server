@@ -9,7 +9,7 @@ const port = process.env.PORT || 5000;
 
 // middleware
 app.use(cors({
-    origin: ['http://localhost:5174'],
+    origin: ['http://localhost:5173'],
     credentials: true
 }));
 app.use(express.json());
@@ -17,17 +17,30 @@ app.use(express.json());
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.favwuwx.mongodb.net/?retryWrites=true&w=majority`;
+// const uri = "mongodb://zakia290:Z3Y09hWOUXWSIxOT@ac-2rc66du-shard-00-00.favwuwx.mongodb.net:27017,ac-2rc66du-shard-00-01.favwuwx.mongodb.net:27017,ac-2rc66du-shard-00-02.favwuwx.mongodb.net:27017/?ssl=true&replicaSet=atlas-jki1xt-shard-0&authSource=admin&retryWrites=true&w=majority";
+// MongoClient.connect(uri, function(err, client) {
+//   const collection = client.db("test").collection("devices");
+//   // perform actions on the collection object
+//   client.close();
+// });
+
+
 
 const client = new MongoClient(uri, {
     serverApi: {
         version: ServerApiVersion.v1,
         strict: true,
         deprecationErrors: true,
+        tls: true,
+        tlsAllowInvalidCertificates: false,
+        tlsVersion: 'TLSv1.2'
     }
 });
 
 async function run() {
     try {
+        await client.connect();
+        console.log('connected');
 
         const roomsCollection = client.db('resoNest').collection('rooms');
         const bookingCollection = client.db('resoNest').collection('bookings');
@@ -50,15 +63,8 @@ async function run() {
 
         // rooms api
         app.get('/rooms', async (req, res) => {
-            // const page = parseInt(req.query.page);
-            // const size = parseInt(req.query.size);
-            // console.log('pagination', page, size);
-
             const cursor = roomsCollection.find();
-            const result = await cursor
-            // .skip(page* size)
-            // .limit(size)
-            .toArray();
+            const result = await cursor.toArray();
             res.send(result);
         })
 
@@ -68,6 +74,17 @@ async function run() {
             const result = await roomsCollection.findOne(query);
             res.send(result);
         })
+
+        app.put('/rooms/:id/updateAvailability', async (req, res) => {
+            const { id } = req.params;
+            const query = { _id: new ObjectId(id) };
+            // const options = { upsert: true };
+            const updateDoc = { $set: { availability: false } };
+
+
+            const result = await roomsCollection.updateOne(query, updateDoc);
+            res.send(result);
+        });
 
 
         // booking api

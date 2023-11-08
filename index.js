@@ -9,7 +9,7 @@ const port = process.env.PORT || 5000;
 
 // middleware
 app.use(cors({
-    origin: ['http://localhost:5173'],
+    origin: ['http://localhost:5173', 'https://reso-nest.web.app'],
     credentials: true
 }));
 app.use(express.json());
@@ -85,7 +85,7 @@ async function run() {
             const result = await roomsCollection.updateOne(query, updateDoc);
             res.send(result);
         });
-        
+
         app.put('/rooms/:id/updateAvailabilityToTrue', async (req, res) => {
             const { id } = req.params;
             const query = { _id: new ObjectId(id) };

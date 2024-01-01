@@ -8,10 +8,12 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // middleware
-app.use(cors({
-    origin: ['http://localhost:5173', 'https://reso-nest.web.app'],
-    credentials: true
-}));
+app.use(cors(
+    // {
+    //     origin: ['http://localhost:5173', 'https://reso-nest.web.app'],
+    //     credentials: true
+    // }
+));
 app.use(express.json());
 
 
@@ -39,27 +41,34 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
-        await client.connect();
-        console.log('connected');
+        // await client.connect();
+        // console.log('connected');
 
         const roomsCollection = client.db('resoNest').collection('rooms');
         const bookingCollection = client.db('resoNest').collection('bookings');
         const reviewCollection = client.db('resoNest').collection('reviews');
 
         // auth api
+        // jwt related api
         app.post('/jwt', async (req, res) => {
             const user = req.body;
-            console.log(user);
             const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
-
-            res
-                .cookie('token', token, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
-                })
-                .send({ success: true });
+            res.send({ token });
         })
+
+        // app.post('/jwt', async (req, res) => {
+        //     const user = req.body;
+        //     console.log(user);
+        //     const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
+
+        //     res
+        //         .cookie('token', token, {
+        //             httpOnly: true,
+        //             secure: process.env.NODE_ENV === 'production',
+        //             sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+        //         })
+        //         .send({ success: true });
+        // })
 
         // rooms api
         app.get('/rooms', async (req, res) => {
@@ -97,7 +106,7 @@ async function run() {
             res.send(result);
         });
 
-       
+
 
 
         // booking api
